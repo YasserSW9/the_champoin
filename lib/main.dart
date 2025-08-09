@@ -31,21 +31,32 @@ class NewsPage extends StatelessWidget {
       body: ListView.builder(
         itemCount: 10,
         itemBuilder: (context, index) {
-          String? imageUrl = index.isEven
+          String? imageUrl = index.isEven && index != 1
               ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAiUBnIlXP2yBuiLeaf26G3duIP1WjG4NI8A&s'
               : null;
 
-          String? videoUrl = index.isOdd
+          String? videoUrl = index.isOdd && index != 1
               ? 'https://www.youtube.com/watch?v=mjos3MUxiOQ'
+              : null;
+
+          Map<String, String>? matchDetails = index == 1
+              ? {
+                  'team1Name': 'FC Barcelona',
+                  'team1Image':
+                      'https://upload.wikimedia.org/wikipedia/en/thumb/4/47/FC_Barcelona_%28crest%29.svg/1200px-FC_Barcelona_%28crest%29.svg.png',
+                  'team2Name': 'Real Madrid CF',
+                  'team2Image':
+                      'https://upload.wikimedia.org/wikipedia/en/thumb/5/56/Real_Madrid_CF.svg/1200px-Real_Madrid_CF.svg.png',
+                }
               : null;
 
           return NewsCard(
             mainTitle: "The champion",
-            title:
-                'news title 1234234432412341243214234143245235344 ${index + 1}',
+            title: 'THE MOST ANTICIPATED MATCH BETWEEN  ${index + 1}',
             date: '9 august 2025',
             imageUrl: imageUrl,
             videoUrl: videoUrl,
+            matchDetails: matchDetails,
           );
         },
       ),
@@ -59,6 +70,7 @@ class NewsCard extends StatefulWidget {
   final String date;
   final String? imageUrl;
   final String? videoUrl;
+  final Map<String, String>? matchDetails;
 
   const NewsCard({
     super.key,
@@ -67,6 +79,7 @@ class NewsCard extends StatefulWidget {
     required this.mainTitle,
     this.imageUrl,
     this.videoUrl,
+    this.matchDetails,
   });
 
   @override
@@ -147,7 +160,7 @@ class _NewsCardState extends State<NewsCard> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.symmetric(horizontal: 5.0),
             child: Text(
               widget.mainTitle,
               style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
@@ -155,10 +168,10 @@ class _NewsCardState extends State<NewsCard> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: ReadMoreText(
               widget.title,
-              trimLines: 1,
+              trimLines: 2,
               colorClickableText: Colors.blue,
               trimMode: TrimMode.Line,
               trimCollapsedText: 'Show more',
@@ -264,6 +277,66 @@ class _NewsCardState extends State<NewsCard> {
   }
 
   Widget _buildMediaWidget() {
+    if (widget.matchDetails != null) {
+      return Container(
+        margin: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 50),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        widget.matchDetails!['team1Image']!,
+                      ),
+                      radius: 50,
+                    ),
+                    const SizedBox(height: 15),
+                    Text(
+                      widget.matchDetails!['team1Name']!,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'VERSUS',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+                const SizedBox(width: 15),
+                Column(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        widget.matchDetails!['team2Image']!,
+                      ),
+                      radius: 50,
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      widget.matchDetails!['team2Name']!,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
     if (_controller != null &&
         widget.videoUrl != null &&
         widget.videoUrl!.isNotEmpty) {
