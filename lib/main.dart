@@ -325,14 +325,48 @@ class _NewsCardState extends State<NewsCard> {
                     ),
                   ],
                 ),
-                Text(
-                  widget.matchResultDetails!['score']!,
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                  textAlign: TextAlign.center,
+                Column(
+                  // تم إضافة Column هنا لدمج النتيجة والنص
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.matchResultDetails!['score']!,
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 5),
+                    const Text(
+                      'Full Time',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black54,
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_today,
+                          size: 20,
+                          color: Colors.blue,
+                        ),
+
+                        Text(
+                          '15 August 2025',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 Column(
                   children: [
@@ -350,30 +384,6 @@ class _NewsCardState extends State<NewsCard> {
                   ],
                 ),
               ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.calendar_today, size: 20, color: Colors.blue),
-                const SizedBox(width: 5),
-                Text(
-                  '15 August 2025',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 9),
-
-            const Text(
-              'Full Time',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black54,
-              ),
             ),
           ],
         ),
@@ -415,7 +425,7 @@ class _NewsCardState extends State<NewsCard> {
                   style: TextStyle(
                     fontSize: 35,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 148, 41, 33),
+                    color: Colors.black54,
                   ),
                 ),
                 Column(
@@ -534,9 +544,9 @@ class _ReactionUsersList extends StatelessWidget {
   _getReactionIcon(String reaction) {
     switch (reaction) {
       case 'like':
-        return const Icon(Icons.thumb_up, color: Colors.blue, size: 20);
+        return const Icon(Icons.thumb_up, color: Colors.blue, size: 24);
       case 'love':
-        return const Icon(Icons.favorite, color: Colors.red, size: 20);
+        return const Icon(Icons.favorite, color: Colors.red, size: 24);
       case 'haha':
         return const Text('😂', style: TextStyle(fontSize: 24));
       case 'wow':
