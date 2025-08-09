@@ -31,11 +31,11 @@ class NewsPage extends StatelessWidget {
       body: ListView.builder(
         itemCount: 10,
         itemBuilder: (context, index) {
-          String? imageUrl = index.isEven && index != 1
+          String? imageUrl = index.isEven && index != 1 && index != 2
               ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAiUBnIlXP2yBuiLeaf26G3duIP1WjG4NI8A&s'
               : null;
 
-          String? videoUrl = index.isOdd && index != 1
+          String? videoUrl = index.isOdd && index != 1 && index != 2
               ? 'https://www.youtube.com/watch?v=mjos3MUxiOQ'
               : null;
 
@@ -50,13 +50,26 @@ class NewsPage extends StatelessWidget {
                 }
               : null;
 
+          Map<String, String>? matchResultDetails = index == 2
+              ? {
+                  'team1Name': 'FC Barcelona',
+                  'team1Image':
+                      'https://upload.wikimedia.org/wikipedia/en/thumb/4/47/FC_Barcelona_%28crest%29.svg/1200px-FC_Barcelona_%28crest%29.svg.png',
+                  'team2Name': 'Real Madrid CF',
+                  'team2Image':
+                      'https://upload.wikimedia.org/wikipedia/en/thumb/5/56/Real_Madrid_CF.svg/1200px-Real_Madrid_CF.svg.png',
+                  'score': '3 - 2',
+                }
+              : null;
+
           return NewsCard(
             mainTitle: "The champion",
-            title: 'THE MOST ANTICIPATED MATCH BETWEEN  ${index + 1}',
+            title: 'News Title ${index + 1}',
             date: '9 august 2025',
             imageUrl: imageUrl,
             videoUrl: videoUrl,
             matchDetails: matchDetails,
+            matchResultDetails: matchResultDetails,
           );
         },
       ),
@@ -71,6 +84,7 @@ class NewsCard extends StatefulWidget {
   final String? imageUrl;
   final String? videoUrl;
   final Map<String, String>? matchDetails;
+  final Map<String, String>? matchResultDetails;
 
   const NewsCard({
     super.key,
@@ -80,6 +94,7 @@ class NewsCard extends StatefulWidget {
     this.imageUrl,
     this.videoUrl,
     this.matchDetails,
+    this.matchResultDetails,
   });
 
   @override
@@ -90,7 +105,6 @@ class _NewsCardState extends State<NewsCard> {
   bool _isPlayerReady = false;
   YoutubePlayerController? _controller;
 
-  // Temporary list of users who reacted
   final List<Map<String, dynamic>> _reactedUsers = [
     {'name': 'Ahmed', 'reaction': 'like'},
     {'name': 'Sara', 'reaction': 'love'},
@@ -155,7 +169,7 @@ class _NewsCardState extends State<NewsCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.all(19.0),
+      margin: const EdgeInsets.all(15.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -277,6 +291,95 @@ class _NewsCardState extends State<NewsCard> {
   }
 
   Widget _buildMediaWidget() {
+    if (widget.matchResultDetails != null) {
+      return Container(
+        margin: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          children: [
+            const Text(
+              'Match Result',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    Image.network(
+                      widget.matchResultDetails!['team1Image']!,
+                      fit: BoxFit.contain,
+                      height: 100,
+                      width: 100,
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      widget.matchResultDetails!['team1Name']!,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+                Text(
+                  widget.matchResultDetails!['score']!,
+                  style: const TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                Column(
+                  children: [
+                    Image.network(
+                      widget.matchResultDetails!['team2Image']!,
+                      fit: BoxFit.contain,
+                      height: 100,
+                      width: 100,
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      widget.matchResultDetails!['team2Name']!,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.calendar_today, size: 20, color: Colors.blue),
+                const SizedBox(width: 5),
+                Text(
+                  '15 August 2025',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 9),
+
+            const Text(
+              'Full Time',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black54,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     if (widget.matchDetails != null) {
       return Container(
         margin: const EdgeInsets.all(8.0),
@@ -287,47 +390,82 @@ class _NewsCardState extends State<NewsCard> {
         ),
         child: Column(
           children: [
-            const SizedBox(height: 50),
+            const SizedBox(height: 10),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween, // تم تعديل هذا السطر
               children: [
                 Column(
                   children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        widget.matchDetails!['team1Image']!,
-                      ),
-                      radius: 50,
+                    Image.network(
+                      widget.matchDetails!['team1Image']!,
+                      fit: BoxFit.contain,
+                      height: 100,
+                      width: 100,
                     ),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 5),
                     Text(
                       widget.matchDetails!['team1Name']!,
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
-                const SizedBox(width: 12),
                 const Text(
-                  'VERSUS',
+                  'VS',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 35,
                     fontWeight: FontWeight.bold,
-                    color: Colors.red,
+                    color: Color.fromARGB(255, 148, 41, 33),
                   ),
                 ),
-                const SizedBox(width: 15),
                 Column(
                   children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        widget.matchDetails!['team2Image']!,
-                      ),
-                      radius: 50,
+                    Image.network(
+                      widget.matchDetails!['team2Image']!,
+                      fit: BoxFit.contain,
+                      height: 100,
+                      width: 100,
                     ),
                     const SizedBox(height: 5),
                     Text(
                       widget.matchDetails!['team2Name']!,
                       style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.calendar_today,
+                      size: 20,
+                      color: Colors.blue,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      '15 August 2025',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const Icon(Icons.stadium, size: 20, color: Colors.blue),
+                    const SizedBox(width: 5),
+                    Text(
+                      'Camp Nou',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
