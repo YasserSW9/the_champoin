@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:readmore/readmore.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:flutter/services.dart';
-import 'package:readmore/readmore.dart';
 import 'package:flutter_reaction_button/flutter_reaction_button.dart';
 
 void main() {
@@ -77,6 +77,15 @@ class _NewsCardState extends State<NewsCard> {
   bool _isPlayerReady = false;
   YoutubePlayerController? _controller;
 
+  // Temporary list of users who reacted
+  final List<Map<String, dynamic>> _reactedUsers = [
+    {'name': 'Ahmed', 'reaction': 'like'},
+    {'name': 'Sara', 'reaction': 'love'},
+    {'name': 'Ali', 'reaction': 'haha'},
+    {'name': 'Fatima', 'reaction': 'like'},
+    {'name': 'Mohamed', 'reaction': 'wow'},
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -119,6 +128,15 @@ class _NewsCardState extends State<NewsCard> {
       overlays: SystemUiOverlay.values,
     );
     super.dispose();
+  }
+
+  void _showReactionUsers(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return _ReactionUsersList(users: _reactedUsers);
+      },
+    );
   }
 
   @override
@@ -164,47 +182,83 @@ class _NewsCardState extends State<NewsCard> {
           _buildMediaWidget(),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: ReactionButton<String>(
-                onReactionChanged: (value) {
-                  print("${value}");
-                },
-                reactions: <Reaction<String>>[
-                  Reaction<String>(
-                    value: 'like',
-                    icon: const Icon(Icons.thumb_up_alt_outlined),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: ReactionButton<String>(
+                    onReactionChanged: (value) {
+                      print(value);
+                    },
+                    reactions: <Reaction<String>>[
+                      Reaction<String>(
+                        value: 'like',
+                        icon: const Icon(Icons.thumb_up_alt_outlined),
+                      ),
+                      Reaction<String>(
+                        value: 'love',
+                        icon: const Icon(
+                          Icons.favorite_outlined,
+                          color: Colors.red,
+                        ),
+                      ),
+                      Reaction<String>(
+                        value: 'haha',
+                        icon: const Text('😂', style: TextStyle(fontSize: 24)),
+                      ),
+                      Reaction<String>(
+                        value: 'wow',
+                        icon: const Text('😮', style: TextStyle(fontSize: 24)),
+                      ),
+                      Reaction<String>(
+                        value: 'sad',
+                        icon: const Text('😢', style: TextStyle(fontSize: 24)),
+                      ),
+                      Reaction<String>(
+                        value: 'angry',
+                        icon: const Text('😡', style: TextStyle(fontSize: 24)),
+                      ),
+                    ],
+                    itemSize: const Size(32, 32),
                   ),
-                  Reaction<String>(
-                    value: 'love',
-                    icon: const Icon(
-                      Icons.favorite_outlined,
-                      color: Colors.red,
-                    ),
-                  ),
-                  Reaction<String>(
-                    value: 'haha',
-                    icon: const Text('😂', style: TextStyle(fontSize: 24)),
-                  ),
-                  Reaction<String>(
-                    value: 'wow',
-                    icon: const Text('😮', style: TextStyle(fontSize: 24)),
-                  ),
-                  Reaction<String>(
-                    value: 'sad',
-                    icon: const Text('😢', style: TextStyle(fontSize: 24)),
-                  ),
-                  Reaction<String>(
-                    value: 'angry',
-                    icon: const Text('😡', style: TextStyle(fontSize: 24)),
-                  ),
-                ],
-
-                itemSize: const Size(32, 32),
-              ),
+                ),
+                _buildReactionUsersButton(context),
+              ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildReactionUsersButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _showReactionUsers(context),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.thumb_up, color: Colors.blue, size: 16),
+            const SizedBox(width: 4),
+            const Icon(Icons.favorite, color: Colors.red, size: 16),
+            const SizedBox(width: 4),
+            const Text('😂', style: TextStyle(fontSize: 16)),
+            const SizedBox(width: 8),
+            Text(
+              '${_reactedUsers.length}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -258,5 +312,62 @@ class _NewsCardState extends State<NewsCard> {
       return Image.network(widget.imageUrl!, fit: BoxFit.cover, height: 200);
     }
     return const SizedBox.shrink();
+  }
+}
+
+class _ReactionUsersList extends StatelessWidget {
+  final List<Map<String, dynamic>> users;
+
+  const _ReactionUsersList({Key? key, required this.users}) : super(key: key);
+
+  _getReactionIcon(String reaction) {
+    switch (reaction) {
+      case 'like':
+        return const Icon(Icons.thumb_up, color: Colors.blue, size: 20);
+      case 'love':
+        return const Icon(Icons.favorite, color: Colors.red, size: 20);
+      case 'haha':
+        return const Text('😂', style: TextStyle(fontSize: 24));
+      case 'wow':
+        return const Text('😮', style: TextStyle(fontSize: 24));
+      case 'sad':
+        return const Text('😢', style: TextStyle(fontSize: 24));
+      case 'angry':
+        return const Text('😡', style: TextStyle(fontSize: 24));
+      default:
+        return const Icon(Icons.help, size: 20);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'People who reacted',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: users.length,
+              itemBuilder: (context, index) {
+                final user = users[index];
+                return ListTile(
+                  leading: const CircleAvatar(child: Icon(Icons.person)),
+                  title: Text(user['name']!),
+                  trailing: _getReactionIcon(user['reaction']!),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
