@@ -3,17 +3,109 @@ import 'package:readmore/readmore.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_reaction_button/flutter_reaction_button.dart';
+import 'package:image_picker/image_picker.dart';
 
 class NewsPage extends StatelessWidget {
   const NewsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _pickImageFromGallery() async {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        // Handle the selected image here
+        print('Image path: ${image.path}');
+      }
+    }
+
+    // Assuming you have this function to show the YouTube URL dialog
+    void _showYoutubeUrlDialog(BuildContext context) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Enter the video URL'),
+            content: const TextField(
+              decoration: InputDecoration(
+                labelText: 'YouTube URL',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Add'),
+                onPressed: () {
+                  // Logic to handle the YouTube URL
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.add, color: Colors.white),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Enter the news title'),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: <Widget>[
+                      const TextField(
+                        decoration: InputDecoration(
+                          labelText: 'News Title',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          _pickImageFromGallery();
+                          Navigator.of(
+                            context,
+                          ).pop(); // Close the dialog after pressing
+                        },
+                        child: const Text('Add Image from Gallery'),
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the first dialog
+                          _showYoutubeUrlDialog(
+                            context,
+                          ); // Open the second dialog
+                        },
+                        child: const Text('Add YouTube Link'),
+                      ),
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
         backgroundColor: Colors.blueAccent,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       appBar: AppBar(title: const Text("News page"), centerTitle: true),
       body: ListView.builder(
