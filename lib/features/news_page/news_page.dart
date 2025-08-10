@@ -10,6 +10,11 @@ class NewsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(Icons.add, color: Colors.white),
+        backgroundColor: Colors.blueAccent,
+      ),
       appBar: AppBar(title: const Text("News page"), centerTitle: true),
       body: ListView.builder(
         itemCount: 10,

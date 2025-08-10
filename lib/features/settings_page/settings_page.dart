@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:soccer_app/features/profile_page/profile_page.dart';
 import 'package:soccer_app/main.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -36,10 +37,20 @@ class SettingsPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              _buildSettingsItem(
-                title: "Profile",
-                icon: Icons.person,
-                trailing: Icons.arrow_forward_ios,
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProfilePage(),
+                    ),
+                  );
+                },
+                child: _buildSettingsItem(
+                  title: "Profile",
+                  icon: Icons.person,
+                  trailing: Icons.arrow_forward_ios,
+                ),
               ),
               _buildSettingsItem(
                 title: "Language",
@@ -113,9 +124,6 @@ class SettingsPage extends StatelessWidget {
         title: Text(title),
         subtitle: subtitle != null ? Text(subtitle) : null,
         trailing: Icon(trailing),
-        onTap: () {
-          // Handle tap
-        },
       ),
     );
   }
